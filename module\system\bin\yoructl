@@ -1,0 +1,3 @@
+#!/system/bin/sh
+# yoructl - operator alias for the yorud control CLI.
+exec /system/bin/yorud "$@"

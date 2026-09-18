@@ -1,0 +1,10 @@
+#!/system/bin/sh
+# yorud launcher installed through the module overlay so it is on PATH.
+# A new binary name is added; no system binary is ever replaced.
+REAL=/data/adb/modules/yoru-repeater/yoru/bin/yorud
+[ -x "$REAL" ] || REAL=/data/adb/yoru-repeater/backup/yorud
+if [ ! -x "$REAL" ]; then
+  echo "yorud: binary not found (module removed?)" 1>&2
+  exit 127
+fi
+exec "$REAL" "$@"

@@ -1,0 +1,9 @@
+id=yoru-repeater
+name=Yoru Repeater
+version=v1.0.0
+versionCode=1
+author=YoruSoft
+description=Capability-driven Wi-Fi repeater / hotspot router with a real-time Material 3 web dashboard.
+schemaVersion=1
+minApi=24
+updateJson=

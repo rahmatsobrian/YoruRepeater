@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1c1b1f" id="meta-theme">
+<meta name="referrer" content="no-referrer">
+<title>Yoru Repeater</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%231b1a2e'/%3E%3Cpath d='M24 10a14 14 0 1 0 14 14A10.5 10.5 0 0 1 24 10z' fill='%23c9c3ff'/%3E%3Ccircle cx='31.5' cy='17.5' r='2.2' fill='%23f6edff'/%3E%3C/svg%3E">
+<link rel="manifest" href="app.webmanifest">
+<link rel="stylesheet" href="css/app.css?v=ui-fix19">
+<script defer src="js/util.js?v=ui-fix19"></script>
+<script defer src="js/charts.js?v=ui-fix19"></script>
+<script defer src="js/api.js?v=ui-fix19"></script>
+<script defer src="js/pages.js?v=ui-fix19"></script>
+<script defer src="js/app.js?v=ui-fix19"></script>
+</head>
+<body>
+
+<svg aria-hidden="true" style="display:none">
+  <defs>
+    <g id="ic" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></g>
+  </defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5M6.5 9.5V19a1 1 0 0 0 1 1h3.2v-5.2h2.6V20h3.2a1 1 0 0 0 1-1V9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-repeater" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.4 8.4a5.1 5.1 0 0 0 0 7.2M15.6 15.6a5.1 5.1 0 0 0 0-7.2M5.6 5.6a9 9 0 0 0 0 12.8M18.4 18.4a9 9 0 0 0 0-12.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-devices" viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="9" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 17h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="16.4" y="8.5" width="4.6" height="8.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.5 9.2a13.7 13.7 0 0 1 17 0M6.4 12.6a9.4 9.4 0 0 1 11.2 0M9.2 15.9a5 5 0 0 1 5.6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="19" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="19" cy="19" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.2V12m0 0-5.4 5M12 12l5.4 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-system" viewBox="0 0 24 24"><rect x="7" y="2.6" width="10" height="18.8" rx="2.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 18.6h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.6" y="8" width="16.4" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21.4 11v2" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><rect x="5" y="10.4" width="8" height="3.2" rx="1" fill="currentColor"/></symbol>
+  <symbol id="i-performance" viewBox="0 0 24 24"><path d="M5.4 18.5A9 9 0 1 1 18.6 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 13.5 15.8 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="14.6" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-traffic" viewBox="0 0 24 24"><path d="M3.5 15.5 8 10l4 3.6 4.4-6.6 4.1 4.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 20h17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-logs" viewBox="0 0 24 24"><rect x="4" y="3.4" width="16" height="17.2" rx="2.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 12h2M10 12h10M4 17h7M15 17h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="7" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="12" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="13" cy="17" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-diagnostics" viewBox="0 0 24 24"><path d="M8 3.5h8M12 3.5v5.2M6.2 20.5a5.8 5.8 0 0 1 11.6 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.8 14.5h10.4" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v5.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.7" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.6 15.6 4.4 4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 8.5A8 8 0 1 0 20.6 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 4.2v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 1 2.2 5.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.2 20v-4.4h4.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.5v7.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 6.4a7.8 7.8 0 1 0 10 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14.5 8V5.4a1.8 1.8 0 0 0-1.8-1.8H5.8A1.8 1.8 0 0 0 4 5.4v13.2a1.8 1.8 0 0 0 1.8 1.8h6.9a1.8 1.8 0 0 0 1.8-1.8V16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 12h10.5m0 0-3-3m3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.5" y="10.5" width="13" height="9.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.8" cy="13.2" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m11 11.4 8.5-7M16.4 7.6l2 2M19 5l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-amoled" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.4a8.6 8.6 0 0 1 0 17.2z" fill="currentColor"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3.4a8.6 8.6 0 0 0 0 17.2c1.3 0 2-.9 2-1.8 0-.5-.2-.9-.5-1.2-.3-.4-.5-.8-.5-1.2 0-1 .8-1.8 1.8-1.8h1.3a4.5 4.5 0 0 0 4.4-4.5c0-3.7-3.9-6.7-8.5-6.7z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7.8" cy="11.5" r="1.1" fill="currentColor"/><circle cx="10.3" cy="7.4" r="1.1" fill="currentColor"/><circle cx="14.7" cy="7.4" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.6 4.6 4.6L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 3.6 21.4 20H2.6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.4v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15.7" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v10m0 0 4-4m-4 4-4-4M4.5 19.5h15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V5m0 0 4 4m-4-4L8 9M4.5 19.5h15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-delete" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12.2a1 1 0 0 0 1 .8h7a1 1 0 0 0 1-.8L17.5 7M10 11v5.5M14 11v5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="4" height="4" rx=".8" fill="currentColor"/><path d="M9.5 3.5v3M14.5 3.5v3M9.5 17.5v3M14.5 17.5v3M3.5 9.5h3M3.5 14.5h3M17.5 9.5h3M17.5 14.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-memory" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="9" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 17v2M12 17v2M17 17v2M7.5 11v3M12 11v3M16.5 11v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M10 13.6V5.8a2 2 0 1 1 4 0v7.8a4 4 0 1 1-4 0z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9.5v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-storage" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7.5" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-dns" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.6 12h16.8M12 3.4a13 13 0 0 1 3.6 8.6 13 13 0 0 1-3.6 8.6A13 13 0 0 1 8.4 12 13 13 0 0 1 12 3.4z" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 18.5h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-tv" viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="17" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-watch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 7 9 3.5h6L14.5 7M9.5 17l-.5 3.5h6L14.5 17M12 10v2.4l1.8 1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><rect x="6" y="14" width="12" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 14V6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-game" viewBox="0 0 24 24"><path d="M6.5 8h11a4 4 0 0 1 4 4.6l-.6 3.6a2.6 2.6 0 0 1-4.5 1.2L14.6 16H9.4l-1.8 1.4a2.6 2.6 0 0 1-4.5-1.2l-.6-3.6A4 4 0 0 1 6.5 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7.5 11.5v2.4M6.3 12.7h2.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16.2" cy="12" r=".9" fill="currentColor"/><circle cx="18" cy="13.8" r=".9" fill="currentColor"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="18.5" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4.5v15m0 0-3.2-3.4M7 19.5l3.2-3.4M17 19.5v-15m0 0-3.2 3.4M17 4.5l3.2 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.8 12S6.5 5.8 12 5.8 21.2 12 21.2 12 17.5 18.2 12 18.2 2.8 12 2.8 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.8" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4 4l16 16M10 5.9a7.6 7.6 0 0 1 2-.2c5.5 0 9.2 6.3 9.2 6.3a16 16 0 0 1-2.9 3.7M6.3 8A15.5 15.5 0 0 0 2.8 12S6.5 18.2 12 18.2a8.7 8.7 0 0 0 3.4-.7M10.2 10.3a2.8 2.8 0 0 0 3.6 3.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5.5 7 6.5-7 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.5 13.5a4 4 0 0 0 5.9.4l2.4-2.4a4.1 4.1 0 0 0-5.8-5.8l-1.3 1.3M13.5 10.5a4 4 0 0 0-5.9-.4l-2.4 2.4a4.1 4.1 0 0 0 5.8 5.8l1.3-1.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M4 20v-4M9.3 20v-8M14.7 20v-12M20 20V4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-yoru" viewBox="0 0 48 48"><path d="M24 6a18 18 0 1 0 18 18C35 24 24 24 24 6z" fill="currentColor"/><circle cx="33" cy="14" r="3" fill="currentColor" opacity=".85"/></symbol>
+  <symbol id="i-notifications" viewBox="0 0 24 24"><path d="M12 2.6a6 6 0 0 1 6 6v3.4l1.8 2.7a.8.8 0 0 1-.7 1.3H4.9a.8.8 0 0 1-.7-1.3L6 12V8.6a6 6 0 0 1 6-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20.4a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<a class="skip-link" href="#page">Skip to content</a>
+
+<div id="splash" class="splash" role="status" aria-label="Loading Yoru Repeater">
+  <svg class="splash-logo" width="64" height="64" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-yoru"/></svg>
+  <div class="splash-name">Yoru Repeater</div>
+  <div class="spinner" aria-hidden="true"></div>
+</div>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-brand" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 48 48"><use href="#i-yoru"/></svg>
+    </span>
+    <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+    <div class="topbar-actions">
+      <span id="conn-pill" class="conn-pill" role="status" aria-live="polite" title="Live connection status">
+        <i class="conn-dot" aria-hidden="true"></i><span id="conn-text">Connecting</span>
+      </span>
+      <button class="icon-btn" id="btn-theme" data-i="moon" aria-label="Cycle theme" title="Theme"></button>
+      <button class="icon-btn" id="btn-refresh" data-i="refresh" aria-label="Refresh page data" title="Refresh"></button>
+      <button class="icon-btn hidden" id="btn-auth" data-i="logout" aria-label="Sign out" title="Sign out"></button>
+      <button class="icon-btn hidden" id="btn-menu" data-i="menu" aria-label="Menu" title="Menu"></button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" id="sidenav" aria-label="Primary">
+    <div class="sidenav-head">
+      <span class="sidenav-logo" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 48 48"><use href="#i-yoru"/></svg></span>
+      <span class="sidenav-brand">Yoru</span>
+    </div>
+    <div class="sidenav-list" id="sidenav-list"></div>
+    <div class="sidenav-foot" id="sidenav-foot"></div>
+  </nav>
+
+  <main class="main" id="page" tabindex="-1" aria-live="off"></main>
+</div>
+
+<nav class="bottomnav" id="bottomnav" aria-label="Primary compact"></nav>
+<div class="scrim hidden" id="scrim"></div>
+
+<div class="login-overlay hidden" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="login-card">
+    <svg width="52" height="52" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-yoru"/></svg>
+    <h2 id="login-title">Yoru Repeater</h2>
+    <p class="login-sub" id="login-sub">Sign in to manage the repeater.</p>
+    <form id="login-form" autocomplete="on">
+      <label class="field">
+        <input type="password" id="login-pass" name="password" autocomplete="current-password" required minlength="8" maxlength="256" aria-describedby="login-err">
+        <span class="field-label">Dashboard password</span>
+      </label>
+      <label class="switch-row" title="Monitor only; cannot start, stop or reconfigure the repeater">
+        <span class="switch"><input type="checkbox" id="login-readonly"><i aria-hidden="true"></i></span>
+        <span>Read-only session</span>
+      </label>
+      <p class="login-err" id="login-err" role="alert"></p>
+      <button class="btn btn-filled btn-block" type="submit" id="login-btn">Sign in</button>
+      <div class="login-first hidden" id="login-first">
+        <p>No dashboard password is set yet. Yoru is reachable by anyone on the network until you create one.</p>
+        <a class="btn btn-tonal" href="#/settings">Create password in Settings</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="snackbars" class="snackbars" role="status" aria-live="polite"></div>
+<div id="dialog-host" class="dialog-host hidden"></div>
+
+<noscript><p style="padding:2rem;text-align:center">The Yoru dashboard needs JavaScript. Everything runs locally from the daemon; no internet access is required.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Build output
+/dist/
+/build/
+
+# WebUI is copied into the Go embed tree at build time.
+/src/daemon/internal/api/dist/
+
+# Go
+/src/daemon/vendor/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+
+# Local scratch
+*.log
+*.tmp
