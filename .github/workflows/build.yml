@@ -1,0 +1,239 @@
+# Yoru Repeater - continuous integration and release packaging.
+#
+# All builds run on GitHub-hosted Ubuntu runners: the module is never built on
+# a developer workstation. Three jobs:
+#   validate  fast static gates (fmt/vet/shell/JS/JSON) on every push and PR
+#   build     reproducible cross-compile + module zip, uploads an artifact
+#   release   attaches the zip + SHA256SUMS to a pushed v* tag
+name: build
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Override version (e.g. 1.2.3). Default: module.prop'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: '1.22'
+  CGO_ENABLED: '0'
+  # No third-party imports: everything the daemon needs is in the standard
+  # library. There is deliberately no go.sum, and GOFLAGS is left unset so the
+  # default readonly mode proves that claim instead of papering over it.
+
+jobs:
+  # ---------------------------------------------------------------- validate
+  validate:
+    name: static checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: gofmt
+        working-directory: src/daemon
+        run: |
+          out=$(gofmt -l .)
+          if [ -n "$out" ]; then
+            echo "::error::these files are not gofmt-clean:"
+            echo "$out"
+            exit 1
+          fi
+
+      - name: go vet (linux)
+        working-directory: src/daemon
+        run: go vet ./...
+
+      # vet with GOOS=linux catches build-tag mistakes that a host-only vet
+      # silently skips (this daemon is linux/arm-only in practice).
+      - name: go vet (linux cross)
+        working-directory: src/daemon
+        env:
+          GOOS: linux
+          GOARCH: arm64
+        run: go vet ./...
+
+      - name: go test
+        working-directory: src/daemon
+        # Not piped into tail: a pipe would report tail's status, not the
+        # test result, so a failing package could pass the gate.
+        run: go test ./...
+
+      - name: shell syntax
+        # Android's /system/bin/sh is not bash. Parsing under dash (or busybox
+        # ash) is what actually predicts "does this run on the device".
+        run: |
+          set -e
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq dash busybox-static
+          # tools/lint-sh.sh picks dash/busybox for #!/system/bin/sh files
+          # (everything shipped in module/) and bash for #!/bin/bash helpers.
+          bash tools/lint-sh.sh
+
+      - name: reject CRLF in shipped sources
+        run: |
+          set -e
+          bad=$(find . -type f \
+            \( -name '*.sh' -o -name '*.go' -o -name '*.js' -o -name '*.html' \
+               -o -name '*.css' -o -name '*.json' -o -name '*.svg' -o -name '*.prop' \
+               -o -name '*.webmanifest' \) \
+            -not -path './.git/*' \
+            -exec grep -lI $'\r' {} + 2>/dev/null || true)
+          if [ -n "$bad" ]; then
+            echo "::error::CRLF line endings found (a stray CR breaks Android sh):"
+            echo "$bad"
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: WebUI JS syntax
+        run: bash tools/check-web.sh
+
+      - name: JSON validity
+        run: |
+          set -e
+          # Explicit loop rather than a pipe: `find | xargs` would surface the
+          # grep/xargs status, letting a malformed file slip through.
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$f"; then
+              echo "::error::invalid JSON: $f"
+              fail=1
+            fi
+          done < <(find . -name '*.json' -not -path './.git/*' \
+                        -not -path './src/daemon/internal/api/dist/*' -print0)
+          exit "$fail"
+
+      - name: module.prop sanity
+        run: |
+          set -e
+          grep -q '^id=yoru-repeater$' module/module.prop
+          grep -qE '^version=v?[0-9]' module/module.prop
+          grep -qE '^versionCode=[0-9]+$' module/module.prop
+
+  # ------------------------------------------------------------------- build
+  build:
+    name: module zip
+    runs-on: ubuntu-24.04
+    needs: validate
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      pkg: ${{ steps.meta.outputs.pkg }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # build.sh stamps the commit hash via git; tags need full history.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: toolchain for packaging
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq zip file dos2unix
+
+      - name: resolve version
+        id: meta
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.version }}" ]; then
+            V="${{ inputs.version }}"
+          else
+            V="$(sed -n 's/^version=//p' module/module.prop | head -n1)"
+            V="${V#v}"
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "pkg=Yoru-Repeater-v$V" >> "$GITHUB_OUTPUT"
+          echo "building version $V"
+
+      # Deterministic builds: pin mtimes so two runs of the same commit
+      # produce a byte-identical zip.
+      - name: build
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          # Commit timestamp, not "now": a rebuild of the same commit must
+          # reproduce the same bytes (and therefore the same SHA256).
+          epoch="$(git log -1 --pretty=%ct)"
+          echo "SOURCE_DATE_EPOCH=$epoch"
+          SOURCE_DATE_EPOCH="$epoch" bash build.sh
+
+      - name: verify artifacts
+        run: |
+          set -e
+          ls -l dist/
+          test -f "dist/${{ steps.meta.outputs.pkg }}.zip"
+          test -f dist/SHA256SUMS
+          # The zip must carry both ABIs and every module entry point.
+          # zipinfo -1 lists bare repo-relative paths (a.txt, sub/b.sh) with no
+          # size/date columns to mis-parse, so exact matching is safe.
+          zipinfo -1 "dist/${{ steps.meta.outputs.pkg }}.zip" > /tmp/entries.txt
+          cat /tmp/entries.txt
+          for f in module.prop service.sh post-fs-data.sh uninstall.sh customize.sh \
+                   bin/yorud-arm64 bin/yorud-arm yoru/scripts/detect.sh \
+                   yoru/scripts/cleanup.sh yoru/scripts/diagnostics.sh \
+                   system/bin/yorud system/bin/yoructl; do
+            grep -qxF "$f" /tmp/entries.txt || { echo "::error::missing payload entry: $f"; exit 1; }
+          done
+          # Guard against a Windows checkout leaking CRLF into the payload.
+          if unzip -p "dist/${{ steps.meta.outputs.pkg }}.zip" service.sh | grep -q $'\r'; then
+            echo "::error::service.sh inside the zip has CRLF endings"
+            exit 1
+          fi
+          ( cd dist && sha256sum -c SHA256SUMS )
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.pkg }}
+          path: |
+            dist/*.zip
+            dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+
+  # ----------------------------------------------------------------- release
+  release:
+    name: publish release
+    runs-on: ubuntu-24.04
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.pkg }}
+          path: dist
+
+      - name: publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          gh release create "${{ github.ref_name }}" \
+            --title "Yoru Repeater ${{ github.ref_name }}" \
+            --generate-notes \
+            dist/*.zip dist/SHA256SUMS
